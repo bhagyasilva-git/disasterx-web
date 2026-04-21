@@ -1,0 +1,1554 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DisasterX Simulation Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      .disaster-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+      .disaster-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      }
+      .parameter-slider {
+        -webkit-appearance: none;
+        appearance: none;
+        height: 6px;
+        background: #e2e8f0;
+        outline: none;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+        border-radius: 3px;
+      }
+      .parameter-slider:hover {
+        opacity: 1;
+      }
+      .parameter-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        background: #3b82f6;
+        cursor: pointer;
+        border-radius: 50%;
+      }
+      .parameter-slider::-moz-range-thumb {
+        width: 18px;
+        height: 18px;
+        background: #3b82f6;
+        cursor: pointer;
+        border-radius: 50%;
+      }
+      .simulation-container {
+        min-height: 400px;
+        max-height: 600px;
+        position: relative;
+        overflow: hidden;
+      }
+      .building {
+        position: absolute;
+        background-color: #94a3b8;
+        transition: all 0.5s ease;
+      }
+      .water {
+        position: absolute;
+        background: linear-gradient(
+          180deg,
+          rgba(59, 130, 246, 0.6) 0%,
+          rgba(29, 78, 216, 0.8) 100%
+        );
+        transition: all 1s ease;
+      }
+      .person {
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        background-color: #ef4444;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+      }
+      .evacuated {
+        background-color: #10b981;
+      }
+      .damage-indicator {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background-color: #10b981;
+        transition: all 0.5s ease;
+      }
+      .chart-container {
+        min-height: 250px;
+        max-height: 400px;
+        margin-bottom: 1rem;
+        position: relative;
+      }
+      .tab-content {
+        display: none;
+      }
+      .tab-content.active {
+        display: block;
+      }
+      .tab-button {
+        transition: all 0.3s ease;
+      }
+      .tab-button.active {
+        background-color: #3b82f6;
+        color: white;
+      }
+      .disaster-animation {
+        animation: shake 0.5s;
+        animation-iteration-count: infinite;
+      }
+      @keyframes shake {
+        0% {
+          transform: translate(1px, 1px) rotate(0deg);
+        }
+        10% {
+          transform: translate(-1px, -2px) rotate(-1deg);
+        }
+        20% {
+          transform: translate(-3px, 0px) rotate(1deg);
+        }
+        30% {
+          transform: translate(3px, 2px) rotate(0deg);
+        }
+        40% {
+          transform: translate(1px, -1px) rotate(1deg);
+        }
+        50% {
+          transform: translate(-1px, 2px) rotate(-1deg);
+        }
+        60% {
+          transform: translate(-3px, 1px) rotate(0deg);
+        }
+        70% {
+          transform: translate(3px, 1px) rotate(-1deg);
+        }
+        80% {
+          transform: translate(-1px, -1px) rotate(1deg);
+        }
+        90% {
+          transform: translate(1px, 2px) rotate(0deg);
+        }
+        100% {
+          transform: translate(1px, -2px) rotate(-1deg);
+        }
+      }
+      .flood-animation {
+        animation: rise 3s;
+        animation-fill-mode: forwards;
+      }
+      @keyframes rise {
+        from {
+          height: 0;
+        }
+        to {
+          height: 100%;
+        }
+      }
+      .tsunami-animation {
+        animation: wave 2s;
+        animation-iteration-count: infinite;
+      }
+      @keyframes wave {
+        0% {
+          transform: translateX(0);
+        }
+        50% {
+          transform: translateX(-10px);
+        }
+        100% {
+          transform: translateX(0);
+        }
+      }
+
+      /* Neon accent theme to match main DisasterX site */
+      :root {
+        --dx-bg: #061228;
+        --dx-card: #07101a;
+        --dx-card-soft: #0b1424;
+        --dx-accent1: #ff6b35;
+        --dx-accent2: #00c2ff;
+        --dx-accent3: #8e6bff;
+        --dx-text: #e9f6ff;
+        --dx-muted: #a9b8c6;
+      }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        background:
+          radial-gradient(
+            ellipse 800px 400px at 10% 10%,
+            rgba(255, 107, 53, 0.1),
+            transparent
+          ),
+          radial-gradient(
+            ellipse 600px 300px at 85% 85%,
+            rgba(0, 194, 255, 0.1),
+            transparent
+          ),
+          radial-gradient(
+            ellipse 400px 200px at 50% 50%,
+            rgba(142, 107, 255, 0.08),
+            transparent
+          ),
+          linear-gradient(
+            135deg,
+            #031028 0%,
+            #041021 25%,
+            #061228 50%,
+            #010516 100%
+          );
+        color: var(--dx-text);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      header {
+        background:
+          radial-gradient(
+            ellipse 700px 260px at 10% 20%,
+            rgba(0, 194, 255, 0.12),
+            transparent
+          ),
+          radial-gradient(
+            ellipse 520px 220px at 90% 20%,
+            rgba(142, 107, 255, 0.1),
+            transparent
+          ),
+          linear-gradient(
+            135deg,
+            #031028 0%,
+            #041021 25%,
+            #061228 50%,
+            #010516 100%
+          ) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.65);
+      }
+
+      main {
+        padding-top: 2.5rem;
+        padding-bottom: 3rem;
+      }
+
+      .bg-white {
+        background: linear-gradient(
+          135deg,
+          rgba(7, 16, 26, 0.96),
+          rgba(5, 12, 22, 0.98)
+        ) !important;
+        border-radius: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        box-shadow:
+          0 18px 50px rgba(0, 0, 0, 0.7),
+          0 0 0 1px rgba(0, 0, 0, 0.4);
+      }
+
+      .bg-gray-50,
+      .bg-gray-100 {
+        background: var(--dx-card-soft) !important;
+      }
+
+      .text-gray-800,
+      .text-gray-700 {
+        color: var(--dx-text) !important;
+      }
+
+      .text-gray-600,
+      .text-gray-500 {
+        color: var(--dx-muted) !important;
+      }
+
+      .bg-blue-50 {
+        background: rgba(0, 194, 255, 0.08) !important;
+        border-color: rgba(0, 194, 255, 0.4) !important;
+      }
+
+      .text-blue-800 {
+        color: var(--dx-accent2) !important;
+      }
+
+      .bg-blue-500,
+      .bg-indigo-500 {
+        background: linear-gradient(
+          135deg,
+          var(--dx-accent2),
+          var(--dx-accent3)
+        ) !important;
+      }
+
+      .simulation-container {
+        background: linear-gradient(
+          135deg,
+          rgba(3, 10, 18, 0.7),
+          rgba(3, 10, 18, 0.95)
+        ) !important;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+      }
+
+      #run-simulation {
+        background: linear-gradient(
+          135deg,
+          var(--dx-accent3) 0%,
+          var(--dx-accent2) 50%,
+          var(--dx-accent1) 100%
+        ) !important;
+        border: none !important;
+        box-shadow:
+          0 10px 26px rgba(0, 194, 255, 0.4),
+          0 0 0 1px rgba(0, 0, 0, 0.5);
+      }
+
+      #run-simulation:hover {
+        background: linear-gradient(
+          135deg,
+          var(--dx-accent2) 0%,
+          var(--dx-accent3) 50%,
+          var(--dx-accent1) 100%
+        ) !important;
+        transform: translateY(-2px) scale(1.02);
+      }
+
+      .tab-button.active {
+        background: linear-gradient(
+          135deg,
+          var(--dx-accent2),
+          var(--dx-accent3)
+        ) !important;
+        color: #ffffff !important;
+      }
+
+      footer {
+        background: rgba(1, 4, 12, 0.96);
+        border-top: 1px solid rgba(255, 255, 255, 0.16);
+      }
+
+      .dx-brand {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .dx-logo {
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+        object-fit: cover;
+        box-shadow: 0 10px 32px rgba(0, 0, 0, 0.55);
+        animation: dxFloaty 6s ease-in-out infinite;
+      }
+
+      .dx-brand h1 {
+        margin: 0;
+        font-size: clamp(20px, 2.6vw, 30px);
+        font-weight: 700;
+        line-height: 1.2;
+      }
+
+      .dx-tag {
+        color: var(--dx-muted);
+        font-size: 13px;
+      }
+
+      @keyframes dxFloaty {
+        0% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-8px);
+        }
+        100% {
+          transform: translateY(0);
+        }
+      }
+
+      .comprehensive-footer {
+        margin-top: 80px;
+        padding: 80px 40px 30px;
+        background: linear-gradient(
+          180deg,
+          rgba(6, 8, 20, 0.95) 0%,
+          rgba(2, 6, 18, 0.98) 50%,
+          rgba(1, 4, 12, 0.95) 100%
+        );
+        border-top: 1px solid rgba(0, 194, 255, 0.25);
+        color: rgba(223, 246, 255, 0.9);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .comprehensive-footer::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(
+            circle at 20% 30%,
+            rgba(0, 194, 255, 0.03) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 70%,
+            rgba(142, 107, 255, 0.02) 0%,
+            transparent 50%
+          );
+        pointer-events: none;
+      }
+
+      .footer-container {
+        max-width: 1200px;
+        margin: 0 auto 40px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 40px;
+      }
+
+      .footer-column h3 {
+        margin: 0 0 20px 0;
+        font-size: 18px;
+        font-weight: 700;
+        color: #fff;
+      }
+
+      .footer-column p {
+        color: var(--dx-muted);
+        line-height: 1.6;
+        font-size: 14px;
+      }
+
+      .footer-column ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .footer-column ul li {
+        margin-bottom: 12px;
+      }
+
+      .footer-column ul li a {
+        color: var(--dx-muted);
+        text-decoration: none;
+        font-size: 14px;
+        transition: color 0.3s ease;
+      }
+
+      .footer-column ul li a:hover {
+        color: var(--dx-accent2);
+      }
+
+      .footer-bottom {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 20px;
+        text-align: center;
+      }
+
+      .footer-bottom p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 13px;
+      }
+
+      @media (max-width: 768px) {
+        .comprehensive-footer {
+          padding: 40px 20px 20px;
+        }
+
+        .footer-container {
+          grid-template-columns: 1fr;
+          gap: 30px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header
+      class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-6 shadow-lg"
+    >
+      <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center">
+          <div class="dx-brand">
+            <video class="dx-logo" autoplay loop muted playsinline>
+              <source src="anim.mp4" type="video/mp4" />
+            </video>
+            <div>
+              <h1>DisasterX</h1>
+              <p class="dx-tag">Ultra-Realistic Multiplayer Simulation</p>
+            </div>
+          </div>
+          <div></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+      <!-- Introduction Section -->
+      <section class="mb-10">
+        <div class="bg-white rounded-xl shadow-md p-6">
+          <h2 class="text-2xl font-bold text-gray-800 mb-4">
+            Explore Disaster Response Strategies
+          </h2>
+          <p class="text-gray-600 mb-4">
+            The DisasterX Simulation Platform provides an interactive
+            environment for simulating and analyzing disaster response
+            scenarios. Explore how different parameters affect outcomes in
+            realistic disaster simulations.
+          </p>
+          <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+            <p class="text-blue-800">
+              <i class="fas fa-lightbulb mr-2"></i>
+              <strong>Engaging Question:</strong> How would different disaster
+              response strategies affect outcomes in a realistic urban
+              environment?
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Disaster Type Selection -->
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">
+          Select Disaster Type
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div
+            class="disaster-card bg-white rounded-xl shadow-md overflow-hidden"
+            onclick="selectDisaster('earthquake')"
+          >
+            <div class="bg-gradient-to-r from-red-500 to-orange-500 p-4">
+              <i class="fas fa-house-damage text-white text-3xl"></i>
+              <h3 class="text-white text-xl font-bold mt-2">Earthquake</h3>
+            </div>
+            <div class="p-4">
+              <p class="text-gray-600">
+                Simulate seismic events and building collapse scenarios
+              </p>
+              <div class="mt-3 flex items-center text-sm text-gray-500">
+                <i class="fas fa-chart-line mr-1"></i>
+                <span>Intensity: 1-10</span>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="disaster-card bg-white rounded-xl shadow-md overflow-hidden"
+            onclick="selectDisaster('flood')"
+          >
+            <div class="bg-gradient-to-r from-blue-500 to-cyan-500 p-4">
+              <i class="fas fa-water text-white text-3xl"></i>
+              <h3 class="text-white text-xl font-bold mt-2">Flood</h3>
+            </div>
+            <div class="p-4">
+              <p class="text-gray-600">
+                Model water rise and evacuation scenarios
+              </p>
+              <div class="mt-3 flex items-center text-sm text-gray-500">
+                <i class="fas fa-chart-line mr-1"></i>
+                <span>Water Level: 1-10m</span>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="disaster-card bg-white rounded-xl shadow-md overflow-hidden"
+            onclick="selectDisaster('tsunami')"
+          >
+            <div class="bg-gradient-to-r from-indigo-500 to-purple-500 p-4">
+              <i class="fas fa-wave-square text-white text-3xl"></i>
+              <h3 class="text-white text-xl font-bold mt-2">Tsunami</h3>
+            </div>
+            <div class="p-4">
+              <p class="text-gray-600">
+                Simulate coastal wave impacts and destruction
+              </p>
+              <div class="mt-3 flex items-center text-sm text-gray-500">
+                <i class="fas fa-chart-line mr-1"></i>
+                <span>Wave Height: 1-15m</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Simulation Parameters -->
+      <section class="mb-10">
+        <div class="bg-white rounded-xl shadow-md p-6">
+          <h2 class="text-2xl font-bold text-gray-800 mb-4">
+            Simulation Parameters
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-gray-700 font-medium mb-2">
+                <span id="parameter-label">Disaster Intensity</span>
+              </label>
+              <input
+                type="range"
+                id="intensity-slider"
+                class="parameter-slider w-full"
+                min="1"
+                max="10"
+                value="5"
+              />
+              <div class="flex justify-between text-sm text-gray-500 mt-1">
+                <span>Low</span>
+                <span id="intensity-value">5</span>
+                <span>High</span>
+              </div>
+            </div>
+            <div>
+              <label class="block text-gray-700 font-medium mb-2"
+                >Population Density</label
+              >
+              <input
+                type="range"
+                id="population-slider"
+                class="parameter-slider w-full"
+                min="1"
+                max="10"
+                value="5"
+              />
+              <div class="flex justify-between text-sm text-gray-500 mt-1">
+                <span>Low</span>
+                <span id="population-value">5</span>
+                <span>High</span>
+              </div>
+            </div>
+            <div>
+              <label class="block text-gray-700 font-medium mb-2"
+                >Building Density</label
+              >
+              <input
+                type="range"
+                id="building-slider"
+                class="parameter-slider w-full"
+                min="1"
+                max="10"
+                value="5"
+              />
+              <div class="flex justify-between text-sm text-gray-500 mt-1">
+                <span>Low</span>
+                <span id="building-value">5</span>
+                <span>High</span>
+              </div>
+            </div>
+            <div>
+              <label class="block text-gray-700 font-medium mb-2"
+                >Response Time</label
+              >
+              <input
+                type="range"
+                id="response-slider"
+                class="parameter-slider w-full"
+                min="1"
+                max="10"
+                value="5"
+              />
+              <div class="flex justify-between text-sm text-gray-500 mt-1">
+                <span>Slow</span>
+                <span id="response-value">5</span>
+                <span>Fast</span>
+              </div>
+            </div>
+          </div>
+          <div class="mt-6 flex justify-center">
+            <button
+              id="run-simulation"
+              class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition duration-300 transform hover:scale-105"
+            >
+              <i class="fas fa-play mr-2"></i> Run Simulation
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Simulation Visualization -->
+      <section class="mb-10">
+        <div class="bg-white rounded-xl shadow-md p-6">
+          <h2 class="text-2xl font-bold text-gray-800 mb-4">
+            Simulation Visualization
+          </h2>
+          <div
+            class="simulation-container bg-gray-100 rounded-lg relative"
+            id="simulation-area"
+          >
+            <!-- Buildings will be dynamically added here -->
+            <!-- Water effects will be dynamically added here -->
+            <!-- People will be dynamically added here -->
+          </div>
+          <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+            <div class="bg-gray-50 p-3 rounded">
+              <p class="text-gray-600 text-sm">Buildings Damaged</p>
+              <p class="text-2xl font-bold text-red-600" id="buildings-damaged">
+                0
+              </p>
+            </div>
+            <div class="bg-gray-50 p-3 rounded">
+              <p class="text-gray-600 text-sm">People Evacuated</p>
+              <p
+                class="text-2xl font-bold text-green-600"
+                id="people-evacuated"
+              >
+                0
+              </p>
+            </div>
+            <div class="bg-gray-50 p-3 rounded">
+              <p class="text-gray-600 text-sm">Response Time</p>
+              <p
+                class="text-2xl font-bold text-blue-600"
+                id="response-time-display"
+              >
+                0s
+              </p>
+            </div>
+            <div class="bg-gray-50 p-3 rounded">
+              <p class="text-gray-600 text-sm">Overall Score</p>
+              <p class="text-2xl font-bold text-purple-600" id="overall-score">
+                0
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Analysis Tabs -->
+      <section class="mb-10">
+        <div class="bg-white rounded-xl shadow-md p-6">
+          <h2 class="text-2xl font-bold text-gray-800 mb-4">
+            Simulation Analysis
+          </h2>
+          <div class="flex border-b border-gray-200 mb-4">
+            <button
+              class="tab-button px-4 py-2 font-medium text-gray-700 hover:text-blue-600 active"
+              onclick="switchTab('damage')"
+            >
+              Damage Analysis
+            </button>
+            <button
+              class="tab-button px-4 py-2 font-medium text-gray-700 hover:text-blue-600"
+              onclick="switchTab('evacuation')"
+            >
+              Evacuation Efficiency
+            </button>
+            <button
+              class="tab-button px-4 py-2 font-medium text-gray-700 hover:text-blue-600"
+              onclick="switchTab('response')"
+            >
+              Response Effectiveness
+            </button>
+          </div>
+          <div id="damage-tab" class="tab-content active">
+            <div class="chart-container">
+              <canvas id="damage-chart"></canvas>
+            </div>
+          </div>
+          <div id="evacuation-tab" class="tab-content">
+            <div class="chart-container">
+              <canvas id="evacuation-chart"></canvas>
+            </div>
+          </div>
+          <div id="response-tab" class="tab-content">
+            <div class="chart-container">
+              <canvas id="response-chart"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Learning Path -->
+      <section class="mb-10">
+        <div class="bg-white rounded-xl shadow-md p-6">
+          <h2 class="text-2xl font-bold text-gray-800 mb-4">Learning Path</h2>
+          <div class="space-y-4">
+            <div class="flex items-start">
+              <div
+                class="bg-blue-100 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0"
+              >
+                <span class="text-blue-800 font-bold">1</span>
+              </div>
+              <div class="ml-4">
+                <h3 class="font-bold text-gray-800">
+                  Single Disaster Exploration
+                </h3>
+                <p class="text-gray-600">
+                  Start by exploring individual disaster types to understand
+                  their unique characteristics and impacts.
+                </p>
+              </div>
+            </div>
+            <div class="flex items-start">
+              <div
+                class="bg-blue-100 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0"
+              >
+                <span class="text-blue-800 font-bold">2</span>
+              </div>
+              <div class="ml-4">
+                <h3 class="font-bold text-gray-800">Parameter Optimization</h3>
+                <p class="text-gray-600">
+                  Experiment with different parameters to find optimal response
+                  strategies for each disaster type.
+                </p>
+              </div>
+            </div>
+            <div class="flex items-start">
+              <div
+                class="bg-blue-100 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0"
+              >
+                <span class="text-blue-800 font-bold">3</span>
+              </div>
+              <div class="ml-4">
+                <h3 class="font-bold text-gray-800">
+                  Multi-Disaster Scenarios
+                </h3>
+                <p class="text-gray-600">
+                  Progress to complex scenarios involving multiple disasters and
+                  cascading effects.
+                </p>
+              </div>
+            </div>
+            <div class="flex items-start">
+              <div
+                class="bg-blue-100 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0"
+              >
+                <span class="text-blue-800 font-bold">4</span>
+              </div>
+              <div class="ml-4">
+                <h3 class="font-bold text-gray-800">
+                  Advanced Strategy Development
+                </h3>
+                <p class="text-gray-600">
+                  Develop comprehensive disaster response strategies based on
+                  simulation insights.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="comprehensive-footer">
+      <div class="footer-bottom">
+        <p>&copy; 2025 DisasterX. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script>
+      // Global variables
+      let selectedDisaster = "earthquake";
+      let simulationRunning = false;
+      let buildings = [];
+      let people = [];
+      let damageChart = null;
+      let evacuationChart = null;
+      let responseChart = null;
+
+      // Initialize the page
+      document.addEventListener("DOMContentLoaded", function () {
+        // Set up event listeners
+        document
+          .getElementById("intensity-slider")
+          .addEventListener("input", updateSliderValue);
+        document
+          .getElementById("population-slider")
+          .addEventListener("input", updateSliderValue);
+        document
+          .getElementById("building-slider")
+          .addEventListener("input", updateSliderValue);
+        document
+          .getElementById("response-slider")
+          .addEventListener("input", updateSliderValue);
+        document
+          .getElementById("run-simulation")
+          .addEventListener("click", runSimulation);
+
+        // Initialize charts
+        initializeCharts();
+
+        // Set initial disaster type
+        selectDisaster("earthquake");
+      });
+
+      // Update slider values
+      function updateSliderValue(event) {
+        const sliderId = event.target.id;
+        const value = event.target.value;
+        const valueId = sliderId.replace("-slider", "-value");
+        const valueElement = document.getElementById(valueId);
+
+        if (valueElement) {
+          valueElement.textContent = value;
+        }
+      }
+
+      // Select disaster type
+      function selectDisaster(type) {
+        selectedDisaster = type;
+
+        // Update UI to show selected disaster
+        const cards = document.querySelectorAll(".disaster-card");
+        cards.forEach((card) => {
+          card.classList.remove("ring-2", "ring-blue-500");
+        });
+
+        // Find and highlight the clicked card
+        const selectedCard = Array.from(cards).find((card) => {
+          return card.onclick && card.onclick.toString().includes(`'${type}'`);
+        });
+        if (selectedCard) {
+          selectedCard.classList.add("ring-2", "ring-blue-500");
+        }
+
+        // Update parameter label based on disaster type
+        const parameterLabel = document.getElementById("parameter-label");
+        switch (type) {
+          case "earthquake":
+            parameterLabel.textContent = "Earthquake Intensity";
+            break;
+          case "flood":
+            parameterLabel.textContent = "Water Level (meters)";
+            break;
+          case "tsunami":
+            parameterLabel.textContent = "Wave Height (meters)";
+            break;
+        }
+      }
+
+      // Run simulation
+      function runSimulation() {
+        if (simulationRunning) {
+          return;
+        }
+
+        simulationRunning = true;
+        const runButton = document.getElementById("run-simulation");
+        runButton.disabled = true;
+        runButton.innerHTML =
+          '<i class="fas fa-spinner fa-spin mr-2"></i> Running...';
+
+        // Get parameter values
+        const intensity = parseInt(
+          document.getElementById("intensity-slider").value,
+        );
+        const population = parseInt(
+          document.getElementById("population-slider").value,
+        );
+        const buildingDensity = parseInt(
+          document.getElementById("building-slider").value,
+        );
+        const responseTime = parseInt(
+          document.getElementById("response-slider").value,
+        );
+
+        // Reset simulation area
+        resetSimulation();
+
+        // Create buildings and people based on parameters
+        createEnvironment(buildingDensity, population);
+
+        // Run disaster simulation based on type
+        setTimeout(() => {
+          switch (selectedDisaster) {
+            case "earthquake":
+              simulateEarthquake(intensity, responseTime);
+              break;
+            case "flood":
+              simulateFlood(intensity, responseTime);
+              break;
+            case "tsunami":
+              simulateTsunami(intensity, responseTime);
+              break;
+          }
+        }, 1000);
+
+        // Re-enable button after simulation
+        setTimeout(() => {
+          simulationRunning = false;
+          runButton.disabled = false;
+          runButton.innerHTML =
+            '<i class="fas fa-play mr-2"></i> Run Simulation';
+        }, 5000);
+      }
+
+      // Reset simulation area
+      function resetSimulation() {
+        const simulationArea = document.getElementById("simulation-area");
+        simulationArea.innerHTML = "";
+        buildings = [];
+        people = [];
+
+        // Reset statistics
+        document.getElementById("buildings-damaged").textContent = "0";
+        document.getElementById("people-evacuated").textContent = "0";
+        document.getElementById("response-time-display").textContent = "0s";
+        document.getElementById("overall-score").textContent = "0";
+      }
+
+      // Create environment with buildings and people
+      function createEnvironment(buildingDensity, population) {
+        const simulationArea = document.getElementById("simulation-area");
+        const areaWidth = simulationArea.offsetWidth;
+        const areaHeight = simulationArea.offsetHeight;
+
+        // Create buildings
+        const buildingCount = Math.floor(buildingDensity * 2);
+        for (let i = 0; i < buildingCount; i++) {
+          const building = document.createElement("div");
+          building.className = "building";
+
+          const width = 40 + Math.random() * 30;
+          const height = 60 + Math.random() * 80;
+          const x = Math.random() * (areaWidth - width);
+          const y = areaHeight - height - 20;
+
+          building.style.width = `${width}px`;
+          building.style.height = `${height}px`;
+          building.style.left = `${x}px`;
+          building.style.top = `${y}px`;
+
+          // Add damage indicator
+          const damageIndicator = document.createElement("div");
+          damageIndicator.className = "damage-indicator";
+          building.appendChild(damageIndicator);
+
+          simulationArea.appendChild(building);
+          buildings.push({
+            element: building,
+            damage: 0,
+            x: x,
+            y: y,
+            width: width,
+            height: height,
+          });
+        }
+
+        // Create people
+        const peopleCount = Math.floor(population * 5);
+        for (let i = 0; i < peopleCount; i++) {
+          const person = document.createElement("div");
+          person.className = "person";
+
+          const x = Math.random() * (areaWidth - 10);
+          const y = Math.random() * (areaHeight - 10);
+
+          person.style.left = `${x}px`;
+          person.style.top = `${y}px`;
+
+          simulationArea.appendChild(person);
+          people.push({
+            element: person,
+            x: x,
+            y: y,
+            evacuated: false,
+          });
+        }
+      }
+
+      // Simulate earthquake
+      function simulateEarthquake(intensity, responseTime) {
+        const simulationArea = document.getElementById("simulation-area");
+        simulationArea.classList.add("disaster-animation");
+
+        // Damage buildings based on intensity
+        buildings.forEach((building, index) => {
+          setTimeout(() => {
+            const damage = Math.min(100, Math.random() * intensity * 15);
+            building.damage = damage;
+
+            // Update damage indicator
+            const damageIndicator =
+              building.element.querySelector(".damage-indicator");
+            if (damageIndicator) {
+              if (damage < 30) {
+                damageIndicator.style.backgroundColor = "#10b981"; // Green
+              } else if (damage < 60) {
+                damageIndicator.style.backgroundColor = "#f59e0b"; // Yellow
+              } else {
+                damageIndicator.style.backgroundColor = "#ef4444"; // Red
+              }
+              damageIndicator.style.width = `${damage}%`;
+            }
+
+            // Update statistics
+            updateStatistics();
+          }, index * 200);
+        });
+
+        // Evacuate people based on response time
+        setTimeout(() => {
+          evacuatePeople(responseTime);
+        }, responseTime * 100);
+
+        // Update charts
+        setTimeout(() => {
+          updateCharts(intensity, responseTime);
+        }, 2000);
+
+        // Remove animation class
+        setTimeout(() => {
+          simulationArea.classList.remove("disaster-animation");
+        }, 3000);
+      }
+
+      // Simulate flood
+      function simulateFlood(waterLevel, responseTime) {
+        const simulationArea = document.getElementById("simulation-area");
+
+        // Create water element
+        const water = document.createElement("div");
+        water.className = "water flood-animation";
+        water.style.width = "100%";
+        water.style.bottom = "0";
+        water.style.height = "0%";
+        simulationArea.appendChild(water);
+
+        // Gradually increase water level
+        let currentHeight = 0;
+        const targetHeight = waterLevel * 10; // Convert to percentage
+        const waterInterval = setInterval(() => {
+          currentHeight += 2;
+          water.style.height = `${currentHeight}%`;
+
+          // Check for buildings and people in water
+          if (currentHeight % 10 === 0) {
+            checkWaterDamage(currentHeight);
+          }
+
+          if (currentHeight >= targetHeight) {
+            clearInterval(waterInterval);
+          }
+        }, 100);
+
+        // Evacuate people based on response time
+        setTimeout(() => {
+          evacuatePeople(responseTime);
+        }, responseTime * 100);
+
+        // Update charts
+        setTimeout(() => {
+          updateCharts(waterLevel, responseTime);
+        }, 3000);
+      }
+
+      // Simulate tsunami
+      function simulateTsunami(waveHeight, responseTime) {
+        const simulationArea = document.getElementById("simulation-area");
+
+        // Create water element with wave effect
+        const water = document.createElement("div");
+        water.className = "water tsunami-animation";
+        water.style.width = "100%";
+        water.style.bottom = "0";
+        water.style.height = `${waveHeight * 8}%`;
+        simulationArea.appendChild(water);
+
+        // Damage buildings near the bottom (coastal area)
+        buildings.forEach((building, index) => {
+          const buildingBottom = building.y + building.height;
+          const areaHeight = simulationArea.offsetHeight;
+          const relativePosition = buildingBottom / areaHeight;
+
+          // Buildings closer to the bottom take more damage
+          if (relativePosition > 0.6) {
+            setTimeout(() => {
+              const damage = Math.min(
+                100,
+                (relativePosition - 0.6) * waveHeight * 20,
+              );
+              building.damage = damage;
+
+              // Update damage indicator
+              const damageIndicator =
+                building.element.querySelector(".damage-indicator");
+              if (damageIndicator) {
+                if (damage < 30) {
+                  damageIndicator.style.backgroundColor = "#10b981"; // Green
+                } else if (damage < 60) {
+                  damageIndicator.style.backgroundColor = "#f59e0b"; // Yellow
+                } else {
+                  damageIndicator.style.backgroundColor = "#ef4444"; // Red
+                }
+                damageIndicator.style.width = `${damage}%`;
+              }
+
+              // Update statistics
+              updateStatistics();
+            }, index * 100);
+          }
+        });
+
+        // Evacuate people based on response time
+        setTimeout(() => {
+          evacuatePeople(responseTime);
+        }, responseTime * 100);
+
+        // Update charts
+        setTimeout(() => {
+          updateCharts(waveHeight, responseTime);
+        }, 2000);
+      }
+
+      // Check water damage to buildings and people
+      function checkWaterDamage(waterHeight) {
+        const simulationArea = document.getElementById("simulation-area");
+        const areaHeight = simulationArea.offsetHeight;
+        const waterLevel = areaHeight * (waterHeight / 100);
+
+        buildings.forEach((building) => {
+          const buildingBottom = building.y + building.height;
+          if (buildingBottom > waterLevel) {
+            const damage = Math.min(100, building.damage + 10);
+            building.damage = damage;
+
+            // Update damage indicator
+            const damageIndicator =
+              building.element.querySelector(".damage-indicator");
+            if (damageIndicator) {
+              if (damage < 30) {
+                damageIndicator.style.backgroundColor = "#10b981"; // Green
+              } else if (damage < 60) {
+                damageIndicator.style.backgroundColor = "#f59e0b"; // Yellow
+              } else {
+                damageIndicator.style.backgroundColor = "#ef4444"; // Red
+              }
+              damageIndicator.style.width = `${damage}%`;
+            }
+          }
+        });
+
+        updateStatistics();
+      }
+
+      // Evacuate people
+      function evacuatePeople(responseTime) {
+        const evacuationRate = Math.max(1, 10 - responseTime); // Faster response = faster evacuation
+        let evacuatedCount = 0;
+
+        const evacuationInterval = setInterval(() => {
+          if (evacuatedCount >= people.length) {
+            clearInterval(evacuationInterval);
+            return;
+          }
+
+          for (
+            let i = 0;
+            i < evacuationRate && evacuatedCount < people.length;
+            i++
+          ) {
+            if (!people[evacuatedCount].evacuated) {
+              people[evacuatedCount].evacuated = true;
+              people[evacuatedCount].element.classList.add("evacuated");
+
+              // Move person to safe zone (top of the area)
+              people[evacuatedCount].element.style.top = "10px";
+              people[evacuatedCount].element.style.left =
+                `${10 + (evacuatedCount % 10) * 20}px`;
+            }
+            evacuatedCount++;
+          }
+
+          // Update statistics
+          document.getElementById("people-evacuated").textContent =
+            evacuatedCount;
+          document.getElementById("response-time-display").textContent =
+            `${responseTime}s`;
+        }, 200);
+      }
+
+      // Update statistics
+      function updateStatistics() {
+        let damagedBuildings = 0;
+        buildings.forEach((building) => {
+          if (building.damage > 30) {
+            damagedBuildings++;
+          }
+        });
+
+        document.getElementById("buildings-damaged").textContent =
+          damagedBuildings;
+
+        // Calculate overall score
+        const evacuatedCount = people.filter((p) => p.evacuated).length;
+        const responseTime = parseInt(
+          document.getElementById("response-slider").value,
+        );
+        const intensity = parseInt(
+          document.getElementById("intensity-slider").value,
+        );
+
+        const score = Math.max(
+          0,
+          100 -
+            damagedBuildings * 5 -
+            responseTime * 2 +
+            evacuatedCount * 2 -
+            intensity * 3,
+        );
+        document.getElementById("overall-score").textContent =
+          Math.round(score);
+      }
+
+      // Initialize charts
+      function initializeCharts() {
+        // Damage Chart
+        const damageCtx = document
+          .getElementById("damage-chart")
+          .getContext("2d");
+        damageChart = new Chart(damageCtx, {
+          type: "bar",
+          data: {
+            labels: ["Low Damage", "Medium Damage", "High Damage", "Destroyed"],
+            datasets: [
+              {
+                label: "Buildings",
+                data: [0, 0, 0, 0],
+                backgroundColor: [
+                  "rgba(16, 185, 129, 0.7)",
+                  "rgba(245, 158, 11, 0.7)",
+                  "rgba(239, 68, 68, 0.7)",
+                  "rgba(127, 29, 29, 0.7)",
+                ],
+                borderColor: [
+                  "rgb(16, 185, 129)",
+                  "rgb(245, 158, 11)",
+                  "rgb(239, 68, 68)",
+                  "rgb(127, 29, 29)",
+                ],
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              title: {
+                display: true,
+                text: "Building Damage Distribution",
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+
+        // Evacuation Chart
+        const evacuationCtx = document
+          .getElementById("evacuation-chart")
+          .getContext("2d");
+        evacuationChart = new Chart(evacuationCtx, {
+          type: "line",
+          data: {
+            labels: ["0s", "10s", "20s", "30s", "40s", "50s", "60s"],
+            datasets: [
+              {
+                label: "People Evacuated",
+                data: [0, 0, 0, 0, 0, 0, 0],
+                backgroundColor: "rgba(16, 185, 129, 0.2)",
+                borderColor: "rgb(16, 185, 129)",
+                borderWidth: 2,
+                tension: 0.4,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              title: {
+                display: true,
+                text: "Evacuation Timeline",
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+
+        // Response Chart
+        const responseCtx = document
+          .getElementById("response-chart")
+          .getContext("2d");
+        responseChart = new Chart(responseCtx, {
+          type: "radar",
+          data: {
+            labels: [
+              "Speed",
+              "Efficiency",
+              "Coordination",
+              "Resource Allocation",
+              "Communication",
+            ],
+            datasets: [
+              {
+                label: "Response Effectiveness",
+                data: [0, 0, 0, 0, 0],
+                backgroundColor: "rgba(59, 130, 246, 0.2)",
+                borderColor: "rgb(59, 130, 246)",
+                borderWidth: 2,
+                pointBackgroundColor: "rgb(59, 130, 246)",
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              title: {
+                display: true,
+                text: "Response Effectiveness Metrics",
+              },
+            },
+            scales: {
+              r: {
+                beginAtZero: true,
+                max: 100,
+              },
+            },
+          },
+        });
+      }
+
+      // Update charts with simulation data
+      function updateCharts(intensity, responseTime) {
+        // Update damage chart
+        let lowDamage = 0;
+        let mediumDamage = 0;
+        let highDamage = 0;
+        let destroyed = 0;
+
+        buildings.forEach((building) => {
+          if (building.damage < 30) {
+            lowDamage++;
+          } else if (building.damage < 60) {
+            mediumDamage++;
+          } else if (building.damage < 90) {
+            highDamage++;
+          } else {
+            destroyed++;
+          }
+        });
+
+        damageChart.data.datasets[0].data = [
+          lowDamage,
+          mediumDamage,
+          highDamage,
+          destroyed,
+        ];
+        damageChart.update();
+
+        // Update evacuation chart
+        const evacuationRate = Math.max(1, 10 - responseTime);
+        const totalPeople = people.length;
+        const evacuationData = [];
+
+        for (let i = 0; i <= 60; i += 10) {
+          const evacuated = Math.min(
+            totalPeople,
+            Math.floor((i / 10) * evacuationRate),
+          );
+          evacuationData.push(evacuated);
+        }
+
+        evacuationChart.data.datasets[0].data = evacuationData;
+        evacuationChart.update();
+
+        // Update response chart
+        const responseEffectiveness = [
+          Math.max(0, 100 - responseTime * 8), // Speed
+          Math.max(0, 100 - responseTime * 5), // Efficiency
+          Math.max(0, 100 - responseTime * 6), // Coordination
+          Math.max(0, 100 - responseTime * 7), // Resource Allocation
+          Math.max(0, 100 - responseTime * 4), // Communication
+        ];
+
+        responseChart.data.datasets[0].data = responseEffectiveness;
+        responseChart.update();
+      }
+
+      // Switch between tabs
+      function switchTab(tabName) {
+        // Hide all tab contents
+        const tabContents = document.querySelectorAll(".tab-content");
+        tabContents.forEach((content) => {
+          content.classList.remove("active");
+        });
+
+        // Remove active class from all tab buttons
+        const tabButtons = document.querySelectorAll(".tab-button");
+        tabButtons.forEach((button) => {
+          button.classList.remove("active");
+        });
+
+        // Show selected tab content
+        document.getElementById(`${tabName}-tab`).classList.add("active");
+
+        // Add active class to clicked button
+        const clickedButton = Array.from(tabButtons).find((btn) => {
+          return btn.onclick && btn.onclick.toString().includes(`'${tabName}'`);
+        });
+        if (clickedButton) {
+          clickedButton.classList.add("active");
+        }
+
+        // Resize charts to ensure proper rendering
+        setTimeout(() => {
+          if (damageChart) damageChart.resize();
+          if (evacuationChart) evacuationChart.resize();
+          if (responseChart) responseChart.resize();
+        }, 100);
+      }
+    </script>
+    <script>
+      window.parent.postMessage({ action: "ready" }, "*");
+
+      window.console = new Proxy(console, {
+        get(target, prop) {
+          if (["log", "warn", "error"].includes(prop)) {
+            return new Proxy(target[prop], {
+              apply(fn, thisArg, args) {
+                fn.apply(thisArg, args);
+                window.parent.postMessage(
+                  {
+                    action: "console",
+                    type: prop,
+                    args: args.map((arg) => {
+                      try {
+                        return JSON.stringify(arg).replace(/^["']|["']$/g, "");
+                      } catch (e) {
+                        return arg;
+                      }
+                    }),
+                  },
+                  "*",
+                );
+              },
+            });
+          }
+          return target[prop];
+        },
+      });
+    </script>
+  </body>
+</html>
