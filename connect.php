@@ -94,12 +94,12 @@ elseif ($action === 'signup') {
             $mail->isSMTP();
             $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
-            $mail->Username   = 'disasterx.lk@gmail.com';
-            $mail->Password   = 'tscl ztni jhfr ifub';
+            $mail->Username   = 'add your email';
+            $mail->Password   = 'add yours';
             $mail->SMTPSecure = 'tls';
             $mail->Port       = 587;
 
-            $mail->setFrom('disasterx.lk@gmail.com', 'DisasterX');
+            $mail->setFrom('add your email', 'DisasterX');
             $mail->addAddress($email, $name);
 
             $mail->isHTML(true);
@@ -194,12 +194,12 @@ elseif ($action === 'forgot') {
             $mail->isSMTP();
             $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
-            $mail->Username   = 'disasterx.lk@gmail.com';
-            $mail->Password   = 'tscl ztni jhfr ifub';
+            $mail->Username   = 'add your email';
+            $mail->Password   = 'add yours';
             $mail->SMTPSecure = 'tls';
             $mail->Port       = 587;
 
-            $mail->setFrom('disasterx.lk@gmail.com', 'DisasterX');
+            $mail->setFrom('add your email', 'DisasterX');
             $mail->addAddress($email, $name);
 
             $mail->isHTML(true);
