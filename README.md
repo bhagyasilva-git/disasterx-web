@@ -11,14 +11,23 @@ Although the full simulation engine was not completed, the project successfully 
 Successfully developed:
 
 Fully working website (frontend + backend)
+
 Client-server architecture using PHP
+
 MySQL database integration
+
 User authentication and data storage system
+
 Download page and content system
+
 Contact and messaging system
+
 Marketing integration (YouTube & LinkedIn project promotion)
+
 Project email communication setup (SMTP ready structure)
+
 Version control and collaboration using Git and Diversion app
+
 
 The real-time disaster simulation engine is not completed, and the project is currently paused at this stage.
 
@@ -27,35 +36,53 @@ The real-time disaster simulation engine is not completed, and the project is cu
 I was responsible for:
 
 Web development and backend system integration
+
 Server-side programming using PHP
+
 Database design and management (MySQL)
+
 XAMPP local server setup and configuration
+
 Ensuring data flow between frontend and backend
+
 Project marketing management
+
 LinkedIn promotion and online project visibility
+
 Managing project email communication system
+
 Git version control and collaboration workflow
 
-🚀 How to Run the Project (Local Setup)
-📌 Requirements
+
+🚀 How to Run the Project (Local Setup)- Requirements
+
 
 Install XAMPP 
+
 Use a modern web browser (Chrome recommended)
+
 
 🖥️ Step 1: Start Server
 
+
 Open XAMPP Control Panel
+
 Start:
+
 Apache
 MySQL
 
 📂 Step 2: Setup Project Folder
 
 Go to:
+
 xampp → htdocs
+
 Copy project folder into htdocs
+
 Example:
 xampp/htdocs/myproject/
+
 
 🌐 Step 3: Run Project in Browser
 
@@ -65,14 +92,17 @@ Open browser and go to:
 
 http://localhost/myproject/index.html
 
+
 🗄️ Database Setup
+
 
 📌 Step 1: Open phpMyAdmin
 
 
 Go to:
 
-http://localhost/phpmyadmin/
+
+http://localhost/phpmyadmin/index.php?route=/
 
 📌 Step 2: Create Database
 
@@ -86,15 +116,22 @@ signup_forms_dx
 Inside the database, create:
 
 contact_messages
+
 users
+
 downloads
+
 
 
 These tables support:
 
+
 user registration
+
 contact form messages
+
 download tracking system
+
 
 📧 Email System (SMTP Setup)
 
@@ -103,17 +140,24 @@ To enable email functionality:
 
 
 Use Gmail SMTP API
+
 Connect using PHPMailer in PHP
+
 Configure:
+
 Gmail App Password
+
 SMTP host settings
+
 
 
 This allows:
 
 
 Contact form email sending
+
 System notifications (if enabled)
+
 
 💡 Project Concept
 
@@ -136,12 +180,19 @@ Project deployment workflow
 📌 Tools & Technologies Used
 
 HTML, CSS, JavaScript
+
 PHP (Backend)
+
 MySQL (Database)
+
 XAMPP (Local Server)
+
 phpMyAdmin
+
 SMTP (Gmail Mail Service)
+
 Git & GitHub
+
 Diversion app
 
 📊 Project Status
