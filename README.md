@@ -197,9 +197,9 @@ Diversion app
 
 📊 Project Status
 
-❌ Real-time simulation engine: Not completed
-✅ Web platform system: Completed
-⏸️ Project currently paused (no further development planned at this stage)
+Real-time simulation engine: paused because lack of resourses for future development 
+Web platform system: Locally developed successsfully
+Project currently paused (no further development planned at this stage)
 
 📄 License
 
@@ -209,4 +209,4 @@ Currently This project is developed for educational and academic purposes.
 
 🌍 Summary
 
-DisasterX demonstrates a full-stack web system with database integration, server-side logic, and real-world deployment setup. While the original simulation vision remains incomplete, the project successfully delivers a functional and structured web-based platform.
+DisasterX demonstrates a full-stack web system with database integration, server-side logic, and real-world deployment setup. While the original simulation vision remains incomplete, the project successfully delivers a functional and structured web-based platform in local server.
