@@ -204,6 +204,6 @@ Project currently paused (no further development planned at this stage)
 
 
 
-🌍 Summary
+**Summary**
 
-DisasterX demonstrates a full-stack web system with database integration, server-side logic, and real-world deployment setup. While the original simulation vision remains incomplete, the project successfully delivers a functional and structured web-based platform in local server.
+DisasterX demonstrates a full-stack web system with database integration, server-side logic, and real-world deployment setup. While the original simulation vision remains development stage, the project successfully delivers a functional and structured web-based platform in local server.
