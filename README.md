@@ -10,23 +10,23 @@ Although the full simulation engine was not completed, the project successfully 
 
 Successfully developed:
 
-Fully working website (frontend + backend)
+* Fully working website (frontend + backend)
 
-Client-server architecture using PHP
+* Client-server architecture using PHP
 
-MySQL database integration
+* MySQL database integration
 
-User authentication and data storage system
+* User authentication and data storage system
 
-Download page and content system
+* Download page and content system
 
-Contact and messaging system
+* Contact and messaging system
 
-Marketing integration (YouTube & LinkedIn project promotion)
+* Marketing integration (YouTube & LinkedIn project promotion)
 
-Project email communication setup (SMTP ready structure)
+* Project email communication setup (SMTP ready structure)
 
-Version control and collaboration using Git and Diversion app
+* Version control and collaboration using Git and Diversion app
 
 
 The real-time disaster simulation engine is not completed, and the project is currently paused at this stage.
@@ -179,21 +179,21 @@ Project deployment workflow
 
 **Tools & Technologies Used**
 
-HTML, CSS, JavaScript
+1. HTML, CSS, JavaScript
 
-PHP (Backend)
+2. PHP (Backend)
 
-MySQL (Database)
+3. MySQL (Database)
 
-XAMPP (Local Server)
+4. XAMPP (Local Server)
 
-phpMyAdmin
+5. phpMyAdmin
 
-SMTP (Gmail Mail Service)
+6. SMTP (Gmail Mail Service)
 
-Git & GitHub
+7. Git & GitHub
 
-Diversion app
+8. Diversion app
 
 **Project Status**
 
