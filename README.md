@@ -1,12 +1,12 @@
-🌐 DisasterX – Real-Time Disaster Simulation Platform (Prototype)
+**DisasterX – Real-Time Disaster Simulation Platform (Prototype)**
 
-📘 Project Overview
+**Project Overview**
 
 DisasterX is an innovative concept project designed as a disaster simulation platform for education, training, and awareness. The original idea focused on a real-time disaster management simulation using advanced physics and interactive environments.
 
 Although the full simulation engine was not completed, the project successfully implements a working client-server web application with database integration, authentication systems, and communication features.
 
-⚙️ Current System Status
+**Current System Status**
 
 Successfully developed:
 
@@ -31,7 +31,7 @@ Version control and collaboration using Git and Diversion app
 
 The real-time disaster simulation engine is not completed, and the project is currently paused at this stage.
 
-👨‍💻 My Contributions
+**👨‍💻 Author Contributions**
 
 I was responsible for:
 
@@ -51,10 +51,10 @@ LinkedIn promotion and online project visibility
 
 Managing project email communication system
 
-Git version control and collaboration workflow
+Git and Diversion version control and collaboration workflow
 
 
-🚀 How to Run the Project (Local Setup)- Requirements
+**How to Run the Project (Local Setup)- Requirements**
 
 
 Install XAMPP 
@@ -62,7 +62,7 @@ Install XAMPP
 Use a modern web browser (Chrome recommended)
 
 
-🖥️ Step 1: Start Server
+**Step 1: Start Server**
 
 
 Open XAMPP Control Panel
@@ -72,7 +72,7 @@ Start:
 Apache
 MySQL
 
-📂 Step 2: Setup Project Folder
+**Step 2: Setup Project Folder**
 
 Go to:
 
@@ -84,7 +84,7 @@ Example:
 xampp/htdocs/myproject/
 
 
-🌐 Step 3: Run Project in Browser
+**Step 3: Run Project in Browser**
 
 
 Open browser and go to:
@@ -93,10 +93,10 @@ Open browser and go to:
 http://localhost/myproject/index.html
 
 
-🗄️ Database Setup
+**Database Setup**
 
 
-📌 Step 1: Open phpMyAdmin
+**Step 1: Open phpMyAdmin**
 
 
 Go to:
@@ -104,14 +104,14 @@ Go to:
 
 http://localhost/phpmyadmin/index.php?route=/
 
-📌 Step 2: Create Database
+**Step 2: Create Database**
 
 
 Create database:
 
 signup_forms_dx
 
-📌 Step 3: Create Tables
+**Step 3: Create Tables**
 
 Inside the database, create:
 
@@ -133,7 +133,7 @@ contact form messages
 download tracking system
 
 
-📧 Email System (SMTP Setup)
+**Email System (SMTP Setup)**
 
 
 To enable email functionality:
@@ -159,17 +159,17 @@ Contact form email sending
 System notifications (if enabled)
 
 
-💡 Project Concept
+**Project Concept**
 
 
-DisasterX was originally designed as a real-time disaster management simulation platform, focusing on:
+**DisasterX was originally designed as a real-time disaster management simulation platform, focusing on:**
 
 Disaster response training
 Multiplayer coordination
 Physics-based simulation environments
 
 
-However, the current working version is a web-based client-server system, which demonstrates:
+**However, the current working version is a full-stack web-based system, which demonstrates:**
 
 
 Database management
@@ -177,7 +177,7 @@ User interaction systems
 Backend integration
 Project deployment workflow
 
-📌 Tools & Technologies Used
+**Tools & Technologies Used**
 
 HTML, CSS, JavaScript
 
@@ -195,15 +195,12 @@ Git & GitHub
 
 Diversion app
 
-📊 Project Status
+**Project Status**
 
 Real-time simulation engine: paused because lack of resourses for future development 
 Web platform system: Locally developed successsfully
 Project currently paused (no further development planned at this stage)
 
-📄 License
-
-Currently This project is developed for educational and academic purposes.
 
 
 
